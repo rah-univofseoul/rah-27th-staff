@@ -52,13 +52,16 @@ main{min-height:440px}
 .section-title-row{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:25px 0 13px}
 .section-title-row h3{font-size:17px;letter-spacing:-.025em;margin:0}.section-title-row small{font-size:12px;color:var(--faint)}
 .schedule-board,.manual-board,.notice-board{border:1px solid var(--rule);border-radius:13px;overflow:hidden;background:#fff}
-.schedule-row{display:grid;grid-template-columns:162px minmax(0,1fr) 90px;align-items:start;gap:20px;padding:19px 22px;border-bottom:1px solid var(--rule)}
+.schedule-row{display:grid;grid-template-columns:162px minmax(0,1fr) 155px;align-items:start;gap:20px;padding:19px 22px;border-bottom:1px solid var(--rule)}
 .schedule-row:last-child{border-bottom:0}
 .when-time{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.4;margin:1px 0 5px}.when-stage{font-size:12px;line-height:1.5;color:var(--faint)}
 .schedule-job{font-size:16px;line-height:1.4;font-weight:660;letter-spacing:-.026em;margin:0 0 6px}
 .schedule-place{font-size:13px;color:var(--sub);margin:0}.schedule-note{font-size:12px;color:#666;margin:6px 0 0;white-space:pre-line}
 .manual-action{justify-self:end;border:1px solid var(--rule);border-radius:8px;padding:7px 9px;font-size:12px;color:#555;white-space:nowrap;line-height:1.2;background:#fafaf9}
 .manual-action:hover{border-color:#999}
+.manual-actions{justify-self:end;display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:96px;max-width:155px;width:100%}
+.manual-actions .manual-action{display:block;justify-self:stretch;text-align:center;white-space:normal;overflow-wrap:anywhere}
+.manual-missing{font-size:11px;color:#8c5537;text-align:center;line-height:1.45}
 .muted-note{font-size:12px;color:var(--faint);line-height:1.7;margin:13px 2px 0}
 .manual-row{display:grid;grid-template-columns:180px minmax(0,1fr);gap:20px;padding:19px 24px;border-bottom:1px solid var(--rule)}
 .manual-row:last-child{border-bottom:0}
@@ -89,7 +92,7 @@ main{min-height:440px}
  .site-intro{padding:21px 0 13px}.site-intro h1{font-size:23px}.site-intro p{font-size:12px}.tabbar{margin-bottom:25px}.tab{flex:1;padding:12px 6px 11px;font-size:13px}
  .pagehead h2{font-size:28px}.pagehead{margin-bottom:17px}.pagehead p{font-size:13px}.detailhead h2{font-size:31px}
  .people-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.person-tile{min-height:83px;padding:14px}.manual-grid{grid-template-columns:1fr;gap:7px}.manual-tile{min-height:72px;padding:13px 15px}
- .schedule-row{grid-template-columns:minmax(0,1fr) auto;column-gap:8px;row-gap:7px;padding:17px 17px}.schedule-when{grid-column:1/-1;display:flex;align-items:baseline;flex-wrap:wrap;gap:8px}.when-time{font-size:15px;margin:0}.when-stage{font-size:11px}.schedule-body{min-width:0;grid-column:1}.schedule-job{margin:0 0 5px}.schedule-place{font-size:12px}.manual-action{grid-column:2;justify-self:end;align-self:center;margin:0}.schedule-row>span:empty{display:none}
+ .schedule-row{grid-template-columns:minmax(0,1fr) auto;column-gap:8px;row-gap:7px;padding:17px 17px}.schedule-when{grid-column:1/-1;display:flex;align-items:baseline;flex-wrap:wrap;gap:8px}.when-time{font-size:15px;margin:0}.when-stage{font-size:11px}.schedule-body{min-width:0;grid-column:1}.schedule-job{margin:0 0 5px}.schedule-place{font-size:12px}.manual-actions{grid-column:2;justify-self:end;align-self:center;max-width:118px;min-width:92px}.manual-action{margin:0}.schedule-row>span:empty{display:none}
  .manual-row{display:block;padding:16px 17px}.manual-label{font-size:12px;margin-bottom:6px}.manual-value{font-size:13.5px;line-height:1.8}.section-title-row{margin-top:20px}.section-title-row h3{font-size:16px}
  .notice-board{padding:0 16px}.notice-line{grid-template-columns:100px 1fr;gap:10px;font-size:13px}.notice-line strong{font-size:13px}.sitefoot{margin-top:45px;display:block}.sitefoot a{display:inline-block;margin-top:7px}
 }
@@ -135,17 +138,333 @@ function peoplePage(){clear();append(view,head('PERSONAL SCHEDULE','개인별 �
  const grid=el('div','people-grid');view.append(search('이름 검색',q=>renderGrid(q)),grid);
  function renderGrid(q){grid.replaceChildren();const found=people.filter(p=>p.name.toLowerCase().includes(q.trim().toLowerCase()));if(!found.length){grid.append(empty());return;}for(const p of found){const item=aLink(personPath(p.name),'person-tile');const top=el('div','person-tile-top');append(top,el('strong','',p.name),el('span','tile-arrow','↗'));append(item,top,el('small','',p.assignments.length+'개 근무 구간'));grid.append(item);}}
  renderGrid('');}
-const dutyRules=[
- [/임원진 콜|준비물 확인/,'임원진 콜·준비물 점검'],[/공연장 이동|짐 운반/,'공연장 이동·짐 운반'],[/가림막 설치/,'여자 탈의실 가림막 설치'],[/포스터|포토월|데코레이션/,'포스터·포토월·데코레이션 설치'],[/인포.*세팅|입장데스크.*세팅/,'인포·입장데스크 세팅'],[/형광테이프|넘버링|무대\/대기 동선/,'무대·대기 동선 표시·넘버링'],[/객석 표시|좌석 동선 세팅/,'객석 표시·좌석 안내 동선 세팅'],[/사전 세팅/,'FOH 음향·화면 사전 세팅'],[/공연진.*도착 안내|MC 도착 안내/,'공연진·MC 도착 안내'],[/식사|생수|케이터링|음료/,'식사·생수·케이터링 배부'],[/내부 리허설 총괄/,'내부 리허설 총괄·큐콜'],[/리허설.*음향|리허설.*화면|리허설.*AV/,'리허설 음향·화면·AV 보조'],[/리허설.*호출|순서 호출·입장동선/,'리허설 순서 호출·입퇴장'],[/촬영본|리허설 영상/,'리허설 영상 촬영·업로드'],[/VIDEO|PHOTO|촬영팀/,'VIDEO·PHOTO 도착 케어'],[/게스트 리허설/,'게스트 리허설 순서·기술 진행'],[/게스트.*케어|퍼포스쿨.*케어/,'게스트·퍼포스쿨 도착·대기 인솔'],[/포지션.*최종|포지션 확인/,'하우스 오픈 전 포지션 점검'],[/입장 줄/,'입장 줄 정리'],[/티켓|팜플렛/,'티켓 확인·좌석별 입장 체크·팜플렛'],[/공연장 내부 좌석|관객 좌석안내|객석.*안내/,'객석 좌석 안내'],[/관객 입장관리/,'공연 중 지각 관객 입장관리'],[/꽃다발|선물 보관/,'꽃다발·선물 접수 및 보관'],[/인포.*마감/,'인포데스크 마감·철수'],[/인포|현장예매/,'인포데스크·현장예매'],[/큐콜|현장진행/,'큐콜·현장진행 (FOH)'],[/음향·화면|음향 재생|^음향$/,'음향 재생'],[/슬라이드|화면 송출|화면/,'화면 송출·슬라이드 전환'],[/AV보조|AV 보조/,'AV 보조'],[/MC보조|MC 보조/,'MC 보조'],[/직전대기/,'직전대기 확인 (실제 하수)'],[/통로/,'통로 대기·호출 (3전)'],[/여자.*탈의실/,'여자 탈의실 상주·관리'],[/하수|대기실/,'하수대기실 관리 (2전)'],[/게스트|인솔/,'게스트 공연 인솔'],[/인터미션|이벤트/,'인터미션·관객 이벤트 지원'],[/유동|지원/,'유동지원·병목 구역 지원'],[/총괄|돌발/,'현장 총괄·돌발상황 대응'],[/퇴장|분실물/,'관객 퇴장 안내·분실물 확인'],[/철수/,'공연장 전체 철수·원상복구'],[/뒤풀이/,'뒤풀이 선발대 이동·준비']
-];
-function manualFor(duty){for(const [rx,name] of dutyRules)if(rx.test(duty)&&byManual.has(name))return name;return null;}
+// Exact assignment-to-manual registry. Never infer links with broad keyword regexes.
+// A combined assignment may have multiple independently relevant manuals.
+// Update this registry when new staff duty names are introduced.
+const dutyManualMap = Object.freeze({
+  "객석 표시·좌석 동선 세팅": [
+    "객석 표시·좌석 안내 동선 세팅"
+  ],
+  "공연장 내부 좌석 안내": [
+    "객석 좌석 안내"
+  ],
+  "관객 좌석안내 지원": [
+    "객석 좌석 안내"
+  ],
+  "객석 좌석 안내": [
+    "객석 좌석 안내"
+  ],
+  "관객 입장관리": [
+    "공연 중 지각 관객 입장관리"
+  ],
+  "직전대기 확인": [
+    "직전대기 확인 (실제 하수)"
+  ],
+  "관객 퇴장·철수 지원": [
+    "관객 퇴장 안내·분실물 확인",
+    "공연장 전체 철수·원상복구"
+  ],
+  "관객 퇴장 안내": [
+    "관객 퇴장 안내·분실물 확인"
+  ],
+  "공연장 철수·원상복구(후발대)": [
+    "공연장 전체 철수·원상복구"
+  ],
+  "무대/대기 동선 형광테이프·넘버링": [
+    "무대·대기 동선 표시·넘버링"
+  ],
+  "무대/대기 동선 표시·넘버링": [
+    "무대·대기 동선 표시·넘버링"
+  ],
+  "여자 탈의실 보조": [
+    "여자 탈의실 상주·관리"
+  ],
+  "여자탈의실": [
+    "여자 탈의실 상주·관리"
+  ],
+  "여자 탈의실 보조(3부 표기)": [
+    "여자 탈의실 상주·관리"
+  ],
+  "여자 탈의실 상주": [
+    "여자 탈의실 상주·관리"
+  ],
+  "여자 탈의실 보조(1부 표기)": [
+    "여자 탈의실 상주·관리"
+  ],
+  "1부 여자 탈의실 상주": [
+    "여자 탈의실 상주·관리"
+  ],
+  "인포 상주": [
+    "인포데스크·현장예매"
+  ],
+  "티켓 확인·팜플렛 전달": [
+    "티켓 확인·좌석별 입장 체크·팜플렛"
+  ],
+  "포스터·포토월·데코레이션": [
+    "포스터·포토월·데코레이션 설치"
+  ],
+  "순서 호출·입장동선 확인": [
+    "리허설 순서 호출·입퇴장"
+  ],
+  "MC보조": [
+    "MC 보조"
+  ],
+  "MC보조 준비": [
+    "MC 보조"
+  ],
+  "1부 MC보조": [
+    "MC 보조"
+  ],
+  "3부 MC 보조(20:05 무대 준비 전환)": [
+    "MC 보조"
+  ],
+  "유동지원": [
+    "유동지원·병목 구역 지원"
+  ],
+  "설치 유동지원": [
+    "유동지원·병목 구역 지원"
+  ],
+  "리허설 유동지원": [
+    "유동지원·병목 구역 지원"
+  ],
+  "유동지원 대기": [
+    "유동지원·병목 구역 지원"
+  ],
+  "현장 유동지원": [
+    "유동지원·병목 구역 지원"
+  ],
+  "꽃다발·엔딩 지원": [
+    "엔딩·꽃다발 전달"
+  ],
+  "꽃다발 전달": [
+    "엔딩·꽃다발 전달"
+  ],
+  "꽃다발·엔딩·퇴장 지원": [
+    "엔딩·꽃다발 전달",
+    "관객 퇴장 안내·분실물 확인"
+  ],
+  "인포·입장데스크 세팅": [
+    "인포·입장데스크 세팅"
+  ],
+  "인포데스크 및 입장데스크 세팅": [
+    "인포·입장데스크 세팅"
+  ],
+  "인포·입장데스크 최종 세팅": [
+    "인포·입장데스크 세팅"
+  ],
+  "공연진·MC 도착 안내": [
+    "공연진·MC 도착 안내"
+  ],
+  "퍼포스쿨·게스트쇼 케어": [
+    "게스트·퍼포스쿨 도착·대기 인솔"
+  ],
+  "게스트 대기장소 인솔": [
+    "게스트·퍼포스쿨 도착·대기 인솔"
+  ],
+  "게스트 대기실 인솔(가능 시)": [
+    "게스트·퍼포스쿨 도착·대기 인솔"
+  ],
+  "뒤풀이 선발대": [
+    "뒤풀이 선발대 이동·준비"
+  ],
+  "임원진 콜·준비물 확인": [
+    "임원진 콜·준비물 점검"
+  ],
+  "임원진 콜·준비물 최종 확인": [
+    "임원진 콜·준비물 점검"
+  ],
+  "전체 집결·당일 공지": [
+    "전체 스태프 공통 원칙"
+  ],
+  "임원진 무대 의상 교체·하수 복귀 준비": [
+    "전체 스태프 공통 원칙"
+  ],
+  "임원진 무대 의상 교체·MC 보조 복귀 준비": [
+    "전체 스태프 공통 원칙",
+    "MC 보조"
+  ],
+  "내부 리허설 총괄·큐콜": [
+    "내부 리허설 총괄·큐콜"
+  ],
+  "VIDEO/PHOTO 도착 케어(가능 시)": [
+    "VIDEO·PHOTO 도착 케어"
+  ],
+  "VIDEO/PHOTO 케어·게스트 음료 주문": [
+    "VIDEO·PHOTO 도착 케어",
+    "식사·생수·케이터링 배부"
+  ],
+  "게스트 순서호출·입퇴장": [
+    "게스트 리허설 순서·기술 진행"
+  ],
+  "게스트 리허설 큐 진행": [
+    "게스트 리허설 순서·기술 진행"
+  ],
+  "게스트 리허설 음향": [
+    "게스트 리허설 순서·기술 진행"
+  ],
+  "게스트 리허설 화면": [
+    "게스트 리허설 순서·기술 진행"
+  ],
+  "게스트 리허설 AV보조": [
+    "게스트 리허설 순서·기술 진행"
+  ],
+  "전 스태프 포지션 확인": [
+    "하우스 오픈 전 포지션 점검"
+  ],
+  "입장데스크 최종 점검": [
+    "하우스 오픈 전 포지션 점검"
+  ],
+  "현장 총괄·관객 입장관리": [
+    "현장 총괄·돌발상황 대응",
+    "공연 중 지각 관객 입장관리"
+  ],
+  "퇴장·철수 총괄": [
+    "현장 총괄·돌발상황 대응",
+    "관객 퇴장 안내·분실물 확인",
+    "공연장 전체 철수·원상복구"
+  ],
+  "하수 대기": [
+    "하수대기실 관리 (2전)"
+  ],
+  "하수·직전대기 통합 관리": [
+    "하수대기실 관리 (2전)",
+    "직전대기 확인 (실제 하수)"
+  ],
+  "하수 대기·직전대기·통로 통합": [
+    "하수대기실 관리 (2전)",
+    "직전대기 확인 (실제 하수)",
+    "통로 대기·호출 (3전)"
+  ],
+  "입장 줄 정리": [
+    "입장 줄 정리"
+  ],
+  "AV보조": [
+    "AV 보조"
+  ],
+  "1부 AV보조": [
+    "AV 보조"
+  ],
+  "통로 관리": [
+    "통로 대기·호출 (3전)"
+  ],
+  "음향·화면 사전 세팅": [
+    "FOH 음향·화면 사전 세팅"
+  ],
+  "음향·화면 준비": [
+    "FOH 음향·화면 사전 세팅"
+  ],
+  "내부 리허설 음향": [
+    "리허설 음향·화면·AV 보조"
+  ],
+  "내부 리허설 화면": [
+    "리허설 음향·화면·AV 보조"
+  ],
+  "내부 리허설 AV보조": [
+    "리허설 음향·화면·AV 보조"
+  ],
+  "음향": [
+    "음향 재생"
+  ],
+  "정다경 음향 인계 준비": [
+    "음향 재생"
+  ],
+  "1부 음향·화면": [
+    "음향 재생",
+    "화면 송출·슬라이드 전환"
+  ],
+  "변정암 음향 인계 준비": [
+    "음향 재생"
+  ],
+  "음향·화면 겸임": [
+    "음향 재생",
+    "화면 송출·슬라이드 전환"
+  ],
+  "여자 탈의실 가림막 설치": [
+    "여자 탈의실 가림막 설치"
+  ],
+  "큐콜·현장진행": [
+    "큐콜·현장진행 (FOH)"
+  ],
+  "3부 큐콜·현장진행": [
+    "큐콜·현장진행 (FOH)"
+  ],
+  "음료 주문/수령·인포 세팅": [
+    "식사·생수·케이터링 배부",
+    "인포·입장데스크 세팅"
+  ],
+  "공연진 점심·생수 배부": [
+    "식사·생수·케이터링 배부"
+  ],
+  "조명팀 식사 전달": [
+    "식사·생수·케이터링 배부"
+  ],
+  "BREAK AMBITION 인솔": [
+    "게스트 공연 인솔"
+  ],
+  "인포·게스트 인솔": [
+    "인포데스크·현장예매",
+    "게스트 공연 인솔"
+  ],
+  "3부 공연·게스트 인솔": [
+    "게스트 공연 인솔"
+  ],
+  "3부 화면": [
+    "화면 송출·슬라이드 전환"
+  ],
+  "2부 화면": [
+    "화면 송출·슬라이드 전환"
+  ],
+  "인포 마감": [
+    "인포데스크 마감·철수"
+  ],
+  "리허설 영상 촬영": [
+    "리허설 영상 촬영·업로드"
+  ],
+  "리허설 영상 업로드·공유": [
+    "리허설 영상 촬영·업로드"
+  ]
+});
+const manualShortNames = Object.freeze({
+ '관객 퇴장 안내·분실물 확인':'퇴장 안내',
+ '공연장 전체 철수·원상복구':'전체 철수',
+ '현장 총괄·돌발상황 대응':'현장 총괄',
+ '공연 중 지각 관객 입장관리':'관객 입장',
+ '엔딩·꽃다발 전달':'꽃다발·엔딩',
+ '식사·생수·케이터링 배부':'식음료',
+ '인포·입장데스크 세팅':'데스크 세팅',
+ 'VIDEO·PHOTO 도착 케어':'촬영팀 안내',
+ '인포데스크·현장예매':'인포·현장예매',
+ '게스트 공연 인솔':'게스트 인솔',
+ '하수대기실 관리 (2전)':'하수 2전',
+ '직전대기 확인 (실제 하수)':'직전대기',
+ '통로 대기·호출 (3전)':'통로 3전',
+ '음향 재생':'음향',
+ '화면 송출·슬라이드 전환':'화면',
+ '전체 스태프 공통 원칙':'공통 원칙',
+ 'MC 보조':'MC 보조'
+});
+function manualFor(duty){
+ const targets=dutyManualMap[duty];
+ if(!targets)return [];
+ return targets.filter(name=>byManual.has(name));
+}
+const missingManualAssignments=[...new Set(people.flatMap(p=>p.assignments.map(job=>job.duty)))].filter(d=>{
+ const targets=dutyManualMap[d];return !targets||!targets.length||targets.some(name=>!byManual.has(name));
+});
+if(missingManualAssignments.length)console.warn('업무 매뉴얼 연결 점검 필요:',missingManualAssignments);
 function personDetail(name){clear();const p=byPerson.get(name);if(!p){append(view,breadcrumb('개인 근무표','#people',name),empty());return;}
  append(view,breadcrumb('개인 근무표','#people',name),detailhead('PERSONAL SCHEDULE',p.name+' · 근무 일정','공연 중에는 예상 시각보다 실제 진행 중인 무대 순서를 우선하여 확인해 주세요.',[p.assignments.length+'개 담당 구간','11.29 일요일']));
  const t=el('div','section-title-row');append(t,el('h3','','근무 일정'),el('small','','시간순 · 위치 확인'));view.append(t);
  const board=el('section','schedule-board');for(const job of p.assignments){const row=el('article','schedule-row');const when=el('div','schedule-when');append(when,el('div','when-time',job.time||'시간 확인'),el('div','when-stage',job.stage||'공연 전'));
  const body=el('div','schedule-body');append(body,el('h3','schedule-job',job.duty),el('p','schedule-place','장소  ·  '+(job.place||'운영진 확인')));
  if(job.note&&!/^원본 기준 · (무대|출연) 준비\/인수인계 우선$/.test(job.note))body.append(el('p','schedule-note',job.note));
- const assigned=manualFor(job.duty);append(row,when,body,assigned?aLink(manualPath(assigned),'manual-action','매뉴얼 ↗'):el('span'));board.append(row);}
+ const targets=manualFor(job.duty),actions=el('div','manual-actions');
+ if(targets.length){for(const target of targets){
+  const label=targets.length===1?'매뉴얼 ↗':(manualShortNames[target]||target)+' ↗';
+  const link=aLink(manualPath(target),'manual-action',label);
+  link.title=target;link.setAttribute('aria-label',job.duty+' — '+target+' 매뉴얼');actions.append(link);
+ }}else{const warning=el('span','manual-missing','매뉴얼 확인 필요');warning.title='운영진에게 업무 매뉴얼 연결 확인 요청';actions.append(warning);}
+ append(row,when,body,actions);board.append(row);}
  view.append(board,el('p','muted-note','※ 배정된 업무는 무대 준비시간과 겹치지 않는지 확인해 주세요. 교대 시 다음 담당자에게 직접 인수인계하고, 변경 사항은 스태프톡 공지를 따릅니다.'));
  const bottom=el('div','detailbottom');append(bottom,aLink('#people','','← 다른 이름 보기'),aLink('#manuals','','업무 매뉴얼 보기 →'));view.append(bottom);}
 function manualsPage(){clear();append(view,head('ROLE MANUAL','업무별 매뉴얼','업무명을 검색하거나 분야를 선택해 주세요.',manuals.length+'개'));
